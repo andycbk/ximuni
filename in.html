@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的手作選物 | My Collection</title>
+    <style>
+        /* --- 基礎設定 & 文青配色 --- */
+        :root {
+            --bg-color: #f9f8f4;       /* 米白紙張感背景 */
+            --sidebar-bg: #eae8e0;     /* 淺灰褐側邊欄 */
+            --text-main: #4a4a4a;      /* 深灰文字 */
+            --text-light: #888888;     /* 淺灰說明文字 */
+            --accent-color: #8c9ea3;   /* 莫蘭迪藍綠色 (強調色) */
+            --font-main: "Helvetica Neue", Helvetica, "PingFang TC", "Hiragino Sans GB", "Microsoft JhengHei", sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- 頂部品牌區 --- */
+        header {
+            width: 100%;
+            height: 250px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #e0e0e0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 您的品牌圖片容器 */
+        .brand-image-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f0f0; /* 預設灰色，有圖會蓋過 */
+        }
+
+        .brand-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 保持比例填滿 */
+            opacity: 0.9;
+        }
+
+        .brand-text {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 20px 40px;
+            font-size: 2rem;
+            letter-spacing: 5px;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+
+        /* --- 主佈局 (左側欄 + 右內容) --- */
+        .container {
+            display: flex;
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* 左側選單 */
+        aside {
+            width: 250px;
+            padding: 40px 20px;
+            background-color: transparent;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            border-right: 1px dashed #ccc; /* 虛線質感 */
+        }
+
+        aside h3 {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .menu-list {
+            list-style: none;
+        }
+
+        .menu-list li {
+            margin-bottom: 15px;
+        }
+
+        .menu-list li button {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            cursor: pointer;
+            text-align: left;
+            width: 100%;
+            padding: 10px;
+            transition: all 0.3s ease;
+            font-family: var(--font-main);
+        }
+
+        .menu-list li button:hover,
+        .menu-list li button.active {
+            color: var(--accent-color);
+            padding-left: 20px; /* 懸停時向右滑動效果 */
+            border-left: 3px solid var(--accent-color);
+        }
+
+        /* 右側展示區 */
+        main {
+            flex: 1;
+            padding: 40px;
+        }
+
+        .category-title {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: var(--text-main);
+            font-weight: 400;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        /* 圖片網格系統 */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* 自動適應寬度 */
+            gap: 40px;
+        }
+
+        .item-card {
+            background: #fff;
+            padding: 15px;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.03); /* 極淡陰影 */
+            transition: transform 0.3s ease;
+            opacity: 0; /* 初始隱藏，用於動畫 */
+            animation: fadeIn 0.5s forwards;
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 10px 10px 20px rgba(0,0,0,0.05);
+        }
+
+        .img-placeholder {
+            width: 100%;
+            aspect-ratio: 1/1; /* 正方形圖片 */
+            background-color: #eee;
+            margin-bottom: 15px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .img-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-desc {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            margin-bottom: 5px;
+        }
+
+        .item-sub {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* 管理員說明區塊 (模擬) */
+        .admin-note {
+            margin-top: 50px;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #eee;
+            font-size: 0.8rem;
+            color: #999;
+            text-align: center;
+        }
+
+        /* 動畫 */
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* 手機版響應式 */
+        @media (max-width: 768px) {
+            .container { flex-direction: column; }
+            aside { 
+                width: 100%; 
+                height: auto; 
+                position: relative; 
+                border-right: none;
+                border-bottom: 1px dashed #ccc;
+                display: flex;
+                overflow-x: auto; /* 橫向捲動 */
+                padding: 15px;
+            }
+            .menu-list { display: flex; width: 100%; }
+            .menu-list li { margin-bottom: 0; margin-right: 15px; flex-shrink: 0; }
+            .menu-list li button { border-left: none; border-bottom: 3px solid transparent; padding: 5px; }
+            .menu-list li button:hover, .menu-list li button.active {
+                padding-left: 5px;
+                border-bottom: 3px solid var(--accent-color);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-image-container">
+            <img src="https://images.unsplash.com/photo-1493962853295-0fd70327578a?auto=format&fit=crop&w=1200&q=80" alt="Brand Banner">
+            <div class="brand-text">MY STUDIO</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside>
+            <h3>CATEGORIES</h3>
+            <ul class="menu-list">
+                <li><button class="active" onclick="filterCategory('all', this)">全部 All</button></li>
+                <li><button onclick="filterCategory('card-holder', this)">證件卡套</button></li>
+                <li><button onclick="filterCategory('brooch', this)">胸針</button></li>
+                <li><button onclick="filterCategory('luggage-tag', this)">行李吊牌</button></li>
+                <li><button onclick="filterCategory('wooden-clip', this)">木伸縮扣</button></li>
+            </ul>
+        </aside>
+
+        <main>
+            <h2 id="current-title" class="category-title">全部作品</h2>
+            
+            <div class="gallery-grid" id="gallery-container">
+                </div>
+
+            <div class="admin-note">
+                管理者提示：若要新增圖片，請在 GitHub 上傳圖片並修改 index.html 中的 itemsData 資料。
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- 4. 資料與邏輯區 (無需後端，直接在這裡管理資料) ---
+        
+        // 請在這裡新增或修改您的商品
+        // category 對應：'card-holder', 'brooch', 'luggage-tag', 'wooden-clip'
+        const itemsData = [
+            {
+                id: 1,
+                category: 'card-holder',
+                imgSrc: 'https://images.unsplash.com/photo-1606103920295-9a091573f160?auto=format&fit=crop&w=500&q=60', 
+                title: '原木質感證件套 - 貓咪款',
+                desc: '使用胡桃木雷射雕刻，溫潤手感。'
+            },
+            {
+                id: 2,
+                category: 'card-holder',
+                imgSrc: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=500&q=60', 
+                title: '職人手作卡套 - 簡約風',
+                desc: '適合上班族的低調設計。'
+            },
+            {
+                id: 3,
+                category: 'brooch',
+                imgSrc: 'https://images.unsplash.com/photo-1615655406736-b37c4fabf923?auto=format&fit=crop&w=500&q=60', 
+                title: '森林系小樹胸針',
+                desc: '搭配帆布袋或大衣都很適合。'
+            },
+            {
+                id: 4,
+                category: 'luggage-tag',
+                imgSrc: 'https://images.unsplash.com/photo-1553531384-cc64ac80f931?auto=format&fit=crop&w=500&q=60', 
+                title: '旅行者行李吊牌',
+                desc: '真皮掛繩，耐用且獨特。'
+            },
+            {
+                id: 5,
+                category: 'wooden-clip',
+                imgSrc: 'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=500&q=60', 
+                title: '微笑伸縮扣',
+                desc: '讓每天打卡都有好心情。'
+            }
+            // 複製上方 { ... }, 格式即可新增項目
+        ];
+
+        // 渲染畫面的功能
+        function renderItems(filter) {
+            const container = document.getElementById('gallery-container');
+            const title = document.getElementById('current-title');
+            
+            container.innerHTML = ''; // 清空目前內容
+
+            // 過濾資料
+            const filteredItems = filter === 'all' 
+                ? itemsData 
+                : itemsData.filter(item => item.category === filter);
+
+            // 更新標題
+            const titleMap = {
+                'all': '全部作品',
+                'card-holder': '證件卡套',
+                'brooch': '胸針',
+                'luggage-tag': '行李吊牌',
+                'wooden-clip': '木伸縮扣'
+            };
+            title.innerText = titleMap[filter] || '作品展示';
+
+            // 產生 HTML
+            if (filteredItems.length === 0) {
+                container.innerHTML = '<p style="color:#999;">目前此分類尚無作品。</p>';
+                return;
+            }
+
+            filteredItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.innerHTML = `
+                    <div class="img-placeholder">
+                        <img src="${item.imgSrc}" alt="${item.title}">
+                    </div>
+                    <div class="item-desc"><strong>${item.title}</strong></div>
+                    <div class="item-sub">${item.desc}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // 切換分類按鈕樣式
+        function filterCategory(category, btnElement) {
+            // 移除所有 active class
+            document.querySelectorAll('.menu-list button').forEach(btn => btn.classList.remove('active'));
+            // 加上當前 active
+            btnElement.classList.add('active');
+            
+            // 重新渲染
+            renderItems(category);
+        }
+
+        // 初始化：載入全部
+        window.onload = () => {
+            renderItems('all');
+        };
+
+    </script>
+</body>
+</html>
