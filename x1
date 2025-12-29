@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的手作選物 | My Collection</title>
+    <style>
+        /* --- 1. 基礎設定 & 色調 --- */
+        :root {
+            --bg-color: #f9f8f4;       /* 米白背景 */
+            --sidebar-bg: #eae8e0;     /* 側欄背景 */
+            --text-main: #4a4a4a;      /* 主要文字 */
+            --text-light: #888888;     /* 次要文字 */
+            --accent-color: #8c9ea3;   /* 莫蘭迪藍綠 (選中色) */
+            --card-bg: #ffffff;
+            --font-main: "Helvetica Neue", Helvetica, "PingFang TC", "Microsoft JhengHei", sans-serif;
+            
+            /* 控制密度的變數 */
+            --grid-min-width: 160px;   /* 電腦版卡片最小寬度 (越小一排越多) */
+            --gap-size: 15px;          /* 卡片之間的間距 */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- 2. 頂部品牌區 (稍微縮矮以露出更多內容) --- */
+        header {
+            width: 100%;
+            height: 180px; /* 從 250px 改為 180px */
+            background-color: #fff;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .brand-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.9;
+        }
+
+        .brand-text {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 25px;
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            color: #333;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* --- 3. 主佈局 --- */
+        .container {
+            display: flex;
+            flex: 1;
+            max-width: 1400px; /* 放寬最大寬度，讓大螢幕顯示更多 */
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* 左側選單 */
+        aside {
+            width: 220px;
+            padding: 30px 15px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            border-right: 1px dashed #ccc;
+            background: transparent;
+            flex-shrink: 0;
+        }
+
+        aside h3 {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .menu-list { list-style: none; }
+        .menu-list li { margin-bottom: 8px; }
+
+        .menu-list li button {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            color: var(--text-main);
+            cursor: pointer;
+            text-align: left;
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .menu-list li button:hover { background-color: rgba(0,0,0,0.05); }
+        .menu-list li button.active {
+            background-color: var(--accent-color);
+            color: #fff;
+            font-weight: 500;
+        }
+
+        /* 右側內容區 */
+        main {
+            flex: 1;
+            padding: 20px; /* 縮小邊距 */
+        }
+
+        .category-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--text-main);
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        /* --- 4. 緊湊型網格系統 (核心修改) --- */
+        .gallery-grid {
+            display: grid;
+            /* 自動填滿，但每張卡片變小，達到一排多圖效果 */
+            grid-template-columns: repeat(auto-fill, minmax(var(--grid-min-width), 1fr));
+            gap: var(--gap-size);
+        }
+
+        .item-card {
+            background: var(--card-bg);
+            padding: 10px; /* 卡片內部留白減少 */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+        }
+
+        .img-placeholder {
+            width: 100%;
+            aspect-ratio: 1/1; /* 保持正方形 */
+            background-color: #eee;
+            margin-bottom: 8px;
+            overflow: hidden;
+            border-radius: 2px;
+        }
+
+        .img-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .item-card:hover img { transform: scale(1.05); }
+
+        .item-desc {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+            white-space: nowrap; /* 文字不換行 */
+            overflow: hidden;
+            text-overflow: ellipsis; /* 太長顯示... */
+        }
+
+        .item-sub {
+            font-size: 0.75rem;
+            color: #999;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* 最多顯示兩行說明 */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* --- 5. 手機版 RWD 完美適配 --- */
+        @media (max-width: 768px) {
+            header { height: 140px; } /* 手機 Header 更矮 */
+            
+            .container { flex-direction: column; }
+            
+            /* 手機版選單變成橫向滑動 */
+            aside {
+                width: 100%;
+                height: auto;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                background: rgba(249, 248, 244, 0.95); /* 半透明背景防擋住 */
+                backdrop-filter: blur(5px);
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+                padding: 10px 15px;
+                display: flex;
+                align-items: center;
+                overflow-x: auto; /* 允許橫向滑動 */
+                white-space: nowrap;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            }
+            
+            aside h3 { display: none; } /* 手機版隱藏 "CATEGORIES" 標題省空間 */
+
+            .menu-list { display: flex; gap: 10px; }
+            .menu-list li { margin: 0; }
+            
+            .menu-list li button {
+                background: #fff;
+                border: 1px solid #ddd;
+                padding: 5px 12px;
+                font-size: 0.9rem;
+                border-radius: 20px; /* 變成藥丸形狀按鈕 */
+            }
+            
+            .menu-list li button.active {
+                background: var(--accent-color);
+                border-color: var(--accent-color);
+                color: #fff;
+            }
+
+            main { padding: 15px 10px; } /* 手機版邊距極窄 */
+
+            /* 手機版強制雙欄 (像蝦皮/IG) */
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr); 
+                gap: 10px; /* 間距極小 */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-image-container">
+            <img src="https://images.unsplash.com/photo-1493962853295-0fd70327578a?auto=format&fit=crop&w=1200&q=80" alt="Brand Banner">
+            <div class="brand-text">MY STUDIO</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside>
+            <h3>CATEGORIES</h3>
+            <ul class="menu-list">
+                <li><button class="active" onclick="filterCategory('all', this)">全部 All</button></li>
+                <li><button onclick="filterCategory('card-holder', this)">證件卡套</button></li>
+                <li><button onclick="filterCategory('brooch', this)">胸針</button></li>
+                <li><button onclick="filterCategory('luggage-tag', this)">行李吊牌</button></li>
+                <li><button onclick="filterCategory('wooden-clip', this)">木伸縮扣</button></li>
+            </ul>
+        </aside>
+
+        <main>
+            <h2 id="current-title" class="category-title">全部作品</h2>
+            <div class="gallery-grid" id="gallery-container"></div>
+        </main>
+    </div>
+
+    <script>
+        // 資料區：請在此處新增您的圖片
+        // 為了展示密集效果，我多複製了幾個項目
+        const itemsData = [
+            { id: 1, category: 'card-holder', imgSrc: 'https://images.unsplash.com/photo-1606103920295-9a091573f160?auto=format&fit=crop&w=300&q=60', title: '貓咪款卡套', desc: '胡桃木質感' },
+            { id: 2, category: 'card-holder', imgSrc: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=300&q=60', title: '簡約風卡套', desc: '適合上班族' },
+            { id: 3, category: 'brooch', imgSrc: 'https://images.unsplash.com/photo-1615655406736-b37c4fabf923?auto=format&fit=crop&w=300&q=60', title: '小樹胸針', desc: '森林系穿搭' },
+            { id: 4, category: 'luggage-tag', imgSrc: 'https://images.unsplash.com/photo-1553531384-cc64ac80f931?auto=format&fit=crop&w=300&q=60', title: '真皮吊牌', desc: '耐用獨特' },
+            { id: 5, category: 'wooden-clip', imgSrc: 'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=300&q=60', title: '微笑伸縮扣', desc: '可愛實用' },
+            { id: 6, category: 'card-holder', imgSrc: 'https://images.unsplash.com/photo-1517260739337-6799d239ce83?auto=format&fit=crop&w=300&q=60', title: '柴犬卡套', desc: '客製化刻字' },
+            { id: 7, category: 'brooch', imgSrc: 'https://images.unsplash.com/photo-1601368156165-4f3bf31f4566?auto=format&fit=crop&w=300&q=60', title: '貓掌胸針', desc: '療癒小物' },
+            { id: 8, category: 'luggage-tag', imgSrc: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=300&q=60', title: '飛機吊牌', desc: '旅行必備' },
+            { id: 9, category: 'wooden-clip', imgSrc: 'https://images.unsplash.com/photo-1452830978618-d6feae7d0ffa?auto=format&fit=crop&w=300&q=60', title: '小花伸縮扣', desc: '春天氣息' },
+            { id: 10, category: 'card-holder', imgSrc: 'https://images.unsplash.com/photo-1590240925232-a567633215ba?auto=format&fit=crop&w=300&q=60', title: '相機造型卡套', desc: '攝影迷最愛' },
+        ];
+
+        function renderItems(filter) {
+            const container = document.getElementById('gallery-container');
+            const title = document.getElementById('current-title');
+            container.innerHTML = ''; 
+
+            const filteredItems = filter === 'all' ? itemsData : itemsData.filter(item => item.category === filter);
+
+            const titleMap = { 'all': '全部作品', 'card-holder': '證件卡套', 'brooch': '胸針', 'luggage-tag': '行李吊牌', 'wooden-clip': '木伸縮扣' };
+            title.innerText = titleMap[filter] || '作品展示';
+
+            if (filteredItems.length === 0) {
+                container.innerHTML = '<p style="color:#999; grid-column: 1/-1;">目前此分類尚無作品。</p>';
+                return;
+            }
+
+            filteredItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.innerHTML = `
+                    <div class="img-placeholder"><img src="${item.imgSrc}" alt="${item.title}"></div>
+                    <div class="item-desc">${item.title}</div>
+                    <div class="item-sub">${item.desc}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterCategory(category, btnElement) {
+            document.querySelectorAll('.menu-list button').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            renderItems(category);
+            
+            // 手機版點擊後自動置中該按鈕 (優化體驗)
+            if(window.innerWidth <= 768) {
+                btnElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        }
+
+        window.onload = () => renderItems('all');
+    </script>
+</body>
+</html>
